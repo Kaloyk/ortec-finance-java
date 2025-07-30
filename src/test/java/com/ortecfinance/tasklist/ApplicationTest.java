@@ -3,6 +3,8 @@ package com.ortecfinance.tasklist;
 import org.junit.jupiter.api.*;
 
 import java.io.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import static java.lang.System.lineSeparator;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -88,6 +90,30 @@ public final class ApplicationTest {
                 "    [x] 6: Primitive Obsession",
                 "    [ ] 7: Outside-In TDD",
                 "    [ ] 8: Interaction-Driven Design",
+                ""
+        );
+
+        execute("quit");
+    }
+
+    @Test
+    void today() throws IOException {
+        execute("today");
+
+        execute("add project secrets");
+        execute("add task secrets Eat more donuts.");
+        execute("add task secrets Destroy all humans.");
+
+        execute("today");
+
+        String now = LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        execute("deadline 1 " + now);
+        readLines("Deadline set for task 1: " + now);
+
+        execute("today");
+        readLines(
+                "secrets",
+                "    [ ] 1: Eat more donuts.",
                 ""
         );
 

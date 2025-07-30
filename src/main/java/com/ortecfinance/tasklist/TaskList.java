@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -66,9 +68,49 @@ public final class TaskList implements Runnable {
             case "help":
                 help();
                 break;
+            case "deadline":
+                deadline(commandRest[1]);
+                break;
+            case "today":
+                today();
+                break;
             default:
                 error(command);
                 break;
+        }
+    }
+
+    private void today() {
+        LocalDate today = LocalDate.now();
+
+        for (Map.Entry<String, List<Task>> project : tasks.entrySet()){
+            List<Task> tasksToday = project.getValue().stream()
+                    .filter(task -> today.equals(task.getDeadline()))
+                    .toList();
+
+            if (!tasksToday.isEmpty()){
+                out.println(project.getKey());
+                for (Task task : tasksToday) {
+                    out.printf("    [%c] %d: %s%n", (task.isDone() ? 'x' : ' '), task.getId(), task.getDescription());
+                }
+                out.println();
+            }
+        }
+    }
+
+    private void deadline(String commandLine) {
+        String[] subcommandRest = commandLine.split(" ", 2);
+        int id = Integer.parseInt(subcommandRest[0]);
+        LocalDate deadline = LocalDate.parse(subcommandRest[1], DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+
+        for (List<Task> tasksList : tasks.values()){
+            for (Task task : tasksList){
+                if (task.getId() == id){
+                    task.setDeadline(deadline);
+                    out.printf("Deadline set for task %d: %s%n", id, deadline.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+                    return;
+                }
+            }
         }
     }
 
