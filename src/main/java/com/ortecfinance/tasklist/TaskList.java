@@ -6,10 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public final class TaskList implements Runnable {
     private static final String QUIT = "quit";
@@ -74,21 +71,74 @@ public final class TaskList implements Runnable {
             case "today":
                 today();
                 break;
+            case "view-by-deadline":
+                viewByDeadline();
+                break;
             default:
                 error(command);
                 break;
         }
     }
 
+    private void viewByDeadline() {
+        Map<LocalDate, Map<String, List<Task>>> sortedTasks = new TreeMap<>();
+        Map<String, List<Task>> noDeadlineTasks = new LinkedHashMap<>();
+
+        // tasks in the according Maps added
+        for (Map.Entry<String, List<Task>> project : tasks.entrySet()) {
+            for (Task task : project.getValue()) {
+                if (task.getDeadline() != null) {
+                    sortedTasks
+                            .computeIfAbsent(task.getDeadline(), k -> new LinkedHashMap<>())
+                            .computeIfAbsent(project.getKey(), l -> new ArrayList<>())
+                            .add(task);
+                } else {
+                    noDeadlineTasks.computeIfAbsent(project.getKey(), k -> new ArrayList<>())
+                            .add(task);
+                }
+            }
+        }
+        if (!sortedTasks.isEmpty()) {
+            // Print tasks with deadlines first in order of the deadlines
+            for (Map.Entry<LocalDate, Map<String, List<Task>>> entry : sortedTasks.entrySet()) {
+                // get the date
+                out.println(entry.getKey().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) + ":");
+
+                for (Map.Entry<String, List<Task>> project : entry.getValue().entrySet()) {
+                    // get project name
+                    out.printf("    %s:%n", project.getKey());
+
+                    for (Task task : project.getValue()) {
+                        out.printf("        %d: %s%n", task.getId(), task.getDescription());
+                    }
+                }
+            }
+        }
+
+        // print tasks without deadlines
+        if (!noDeadlineTasks.isEmpty()){
+            out.println("No deadline:");
+
+            for (Map.Entry<String, List<Task>> project : noDeadlineTasks.entrySet()){
+                out.printf("    %s:%n", project.getKey());
+
+                for (Task task : project.getValue()){
+                    out.printf("        %d: %s%n", task.getId(), task.getDescription());
+                }
+            }
+        }
+
+    }
+
     private void today() {
         LocalDate today = LocalDate.now();
 
-        for (Map.Entry<String, List<Task>> project : tasks.entrySet()){
+        for (Map.Entry<String, List<Task>> project : tasks.entrySet()) {
             List<Task> tasksToday = project.getValue().stream()
                     .filter(task -> today.equals(task.getDeadline()))
                     .toList();
 
-            if (!tasksToday.isEmpty()){
+            if (!tasksToday.isEmpty()) {
                 out.println(project.getKey());
                 for (Task task : tasksToday) {
                     out.printf("    [%c] %d: %s%n", (task.isDone() ? 'x' : ' '), task.getId(), task.getDescription());
@@ -103,9 +153,9 @@ public final class TaskList implements Runnable {
         int id = Integer.parseInt(subcommandRest[0]);
         LocalDate deadline = LocalDate.parse(subcommandRest[1], DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 
-        for (List<Task> tasksList : tasks.values()){
-            for (Task task : tasksList){
-                if (task.getId() == id){
+        for (List<Task> tasksList : tasks.values()) {
+            for (Task task : tasksList) {
+                if (task.getId() == id) {
                     task.setDeadline(deadline);
                     out.printf("Deadline set for task %d: %s%n", id, deadline.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
                     return;

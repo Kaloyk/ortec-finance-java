@@ -120,6 +120,44 @@ public final class ApplicationTest {
         execute("quit");
     }
 
+    @Test
+    void viewByDeadline() throws IOException {
+        execute("add project secrets");
+        execute("add task secrets Eat more donuts.");
+        execute("add task secrets Destroy all humans.");
+        execute("add project training");
+        execute("add task training Four Elements of Simple Design");
+        execute("add task training SOLID");
+        execute("add task training Coupling and Cohesion");
+
+        execute("deadline 1 31-07-2025");
+        readLines("Deadline set for task 1: 31-07-2025");
+
+        execute("deadline 2 01-08-2025");
+        readLines("Deadline set for task 2: 01-08-2025");
+
+        execute("deadline 5 01-08-2025");
+        readLines("Deadline set for task 5: 01-08-2025");
+
+        execute("view-by-deadline");
+        readLines(
+                "31-07-2025:",
+                "    secrets:",
+                "        1: Eat more donuts.",
+                "01-08-2025:",
+                "    secrets:",
+                "        2: Destroy all humans.",
+                "    training:",
+                "        5: Coupling and Cohesion",
+                "No deadline:",
+                "    training:",
+                "        3: Four Elements of Simple Design",
+                "        4: SOLID"
+        );
+
+        execute("quit");
+    }
+
     private void execute(String command) throws IOException {
         read(PROMPT);
         write(command);
