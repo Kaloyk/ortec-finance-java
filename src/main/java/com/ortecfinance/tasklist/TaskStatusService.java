@@ -1,5 +1,8 @@
 package com.ortecfinance.tasklist;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class TaskStatusService {
     private final TaskRepository taskRepository;
 

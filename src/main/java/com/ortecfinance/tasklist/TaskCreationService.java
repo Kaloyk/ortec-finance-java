@@ -1,5 +1,9 @@
 package com.ortecfinance.tasklist;
 
+import io.swagger.v3.oas.annotations.servers.Server;
+import org.springframework.stereotype.Service;
+
+@Service
 public class TaskCreationService {
     private final TaskRepository taskRepository;
 

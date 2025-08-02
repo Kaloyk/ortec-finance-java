@@ -1,8 +1,11 @@
 package com.ortecfinance.tasklist;
 
+import org.springframework.stereotype.Service;
+
 import java.time.LocalDate;
 import java.util.*;
 
+@Service
 public class TaskDeadlineService {
     private final TaskRepository taskRepository;
 
@@ -31,15 +34,15 @@ public class TaskDeadlineService {
         return todayTasks;
     }
 
-    public Map<String, Map<String, List<Task>>> getGroupedByDeadline() {
-        Map<String, Map<String, List<Task>>> grouped = new TreeMap<>();
+    public Map<String, Map<String, List<String>>> getGroupedByDeadline() {
+        Map<String, Map<String, List<String>>> grouped = new TreeMap<>();
 
         for (Map.Entry<String, List<Task>> project : taskRepository.getAll().entrySet()) {
             for (Task task : project.getValue()) {
                 String deadline = task.getDeadline() == null ? "No deadline" : task.getDeadline().toString();
                 grouped.computeIfAbsent(deadline, k -> new LinkedHashMap<>())
                         .computeIfAbsent(project.getKey(), l -> new ArrayList<>())
-                        .add(task);
+                        .add(task.getDescription());
             }
         }
 
