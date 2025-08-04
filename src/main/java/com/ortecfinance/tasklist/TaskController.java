@@ -58,8 +58,12 @@ public class TaskController {
             if (project == null || project.isEmpty() || description == null || description.isEmpty()) {
                 return ResponseEntity.badRequest().body("Invalid params");
             }
-            taskCreationService.addTask(project, description);
-            return ResponseEntity.ok("Created task " + description + " for project " + project);
+            Long id = taskCreationService.addTask(project, description);
+            if (id != null) {
+                return ResponseEntity.ok("Created task with id " + id + " for project " + project);
+            } else {
+                return ResponseEntity.badRequest().body("Task was not created");
+            }
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.toString());
         }

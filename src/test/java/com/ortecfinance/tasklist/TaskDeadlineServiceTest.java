@@ -27,12 +27,12 @@ public class TaskDeadlineServiceTest {
         String description = "first";
 
         projectCreationService.addProject(project);
-        taskCreationService.addTask(project, description);
+        Long id = taskCreationService.addTask(project, description);
 
         assertEquals(0, taskDeadlineService.getTasksForToday().size());
 
-        taskDeadlineService.setDeadline(1, LocalDate.now());
-        assertEquals(1, taskDeadlineService.getTasksForToday().size());
+        taskDeadlineService.setDeadline(id, LocalDate.now());
+        assertEquals(id, taskDeadlineService.getTasksForToday().size());
     }
 
     @Test
@@ -41,11 +41,11 @@ public class TaskDeadlineServiceTest {
         String description = "first";
 
         projectCreationService.addProject(project);
-        taskCreationService.addTask(project, description);
+        Long id = taskCreationService.addTask(project, description);
 
         assertTrue(taskDeadlineService.getGroupedByDeadline().containsKey("No deadline"));
 
-        taskDeadlineService.setDeadline(1, LocalDate.now());
+        taskDeadlineService.setDeadline(id, LocalDate.now());
         assertTrue(taskDeadlineService.getGroupedByDeadline().containsKey(LocalDate.now().toString()));
         assertFalse(taskDeadlineService.getGroupedByDeadline().containsKey("No deadline"));
     }

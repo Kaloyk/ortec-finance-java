@@ -24,12 +24,12 @@ public class TaskStatusServiceTest {
         String description = "first";
 
         projectCreationService.addProject(project);
-        taskCreationService.addTask(project, description);
+        Long id = taskCreationService.addTask(project, description);
 
-        taskStatusService.check(1);
-        assertTrue(taskRepository.findById(1).get().isDone());
+        taskStatusService.check(id);
+        assertTrue(taskRepository.findById(id).get().isDone());
 
-        taskStatusService.uncheck(1);
-        assertFalse(taskRepository.findById(1).get().isDone());
+        taskStatusService.uncheck(id);
+        assertFalse(taskRepository.findById(id).get().isDone());
     }
 }

@@ -13,12 +13,14 @@ public class TaskRepository {
         tasks.put(project, new ArrayList<Task>());
     }
 
-    public void addTask(String project, String description) {
+    public Long addTask(String project, String description) {
         List<Task> projectTasks = tasks.get(project);
         if (projectTasks == null) {
-            return;
+            return null;
         }
-        projectTasks.add(new Task(nextId(), description, false));
+        long id = nextId();
+        projectTasks.add(new Task(id, description, false));
+        return id;
     }
 
     public Optional<Task> findById(long id) {

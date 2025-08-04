@@ -25,12 +25,12 @@ public class TaskCreationServiceTest {
 
         projectCreationService.addProject(project);
 
-        taskCreationService.addTask(project, taskOne);
-        taskCreationService.addTask(project, taskTwo);
+        Long idOne = taskCreationService.addTask(project, taskOne);
+        Long idTwo = taskCreationService.addTask(project, taskTwo);
 
-        assertTrue(taskRepository.findById(1).isPresent());
-        assertEquals(taskOne, taskRepository.findById(1).get().getDescription());
-        assertTrue(taskRepository.findById(2).isPresent());
-        assertEquals(taskTwo, taskRepository.findById(2).get().getDescription());
+        assertTrue(taskRepository.findById(idOne).isPresent());
+        assertEquals(taskOne, taskRepository.findById(idOne).get().getDescription());
+        assertTrue(taskRepository.findById(idTwo).isPresent());
+        assertEquals(taskTwo, taskRepository.findById(idTwo).get().getDescription());
     }
 }
